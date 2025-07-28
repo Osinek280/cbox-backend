@@ -3,24 +3,24 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16
-    container_name: edumateDB
+    container_name: cboxDB
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: edumate
+      POSTGRES_DB: cbox
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - cbox_postgres_data:/var/lib/postgresql/data
     command: [ "postgres", "-c", "log_statement=all" ]
 
   app:
     build: .
-    container_name: spring-edumate-app
+    container_name: spring-cbox-app
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/edumate
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cbox
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SERVER_PORT: 8080
@@ -28,4 +28,4 @@ services:
       - postgres
 
 volumes:
-  postgres_data:
+  cbox_postgres_data:
