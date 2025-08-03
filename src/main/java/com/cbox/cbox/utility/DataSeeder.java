@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-//@Component
+@Component
 public class DataSeeder {
   @Autowired
   private UserRepository userRepository;
