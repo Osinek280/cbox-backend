@@ -62,7 +62,7 @@ services:
     environment:
       SERVICES: s3
       DEBUG: 1
-      DATA_DIR: /tmp/localstack/data
+      DATA_DIR: /var/lib/localstack/data
       DEFAULT_REGION: us-east-1
     volumes:
       - "localstack_data:/var/lib/localstack"

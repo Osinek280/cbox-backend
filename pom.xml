@@ -8,6 +8,14 @@
 		<version>3.4.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>
+
 	<groupId>com.edumate</groupId>
 	<artifactId>edumate</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -45,6 +53,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.12.788</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
