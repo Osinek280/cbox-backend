@@ -67,6 +67,7 @@ services:
     volumes:
       - "localstack_data:/var/lib/localstack"
       - "./init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh"
+      - "./Komponenty:/Komponenty"
 
 volumes:
   cbox_postgres_data:

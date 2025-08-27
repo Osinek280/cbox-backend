@@ -1,4 +1,17 @@
 #!/bin/bash
-awslocal s3 ls s3://cbox-bucket || awslocal s3 mb s3://cbox-bucket
-##!/bin/bash
-#awslocal s3 mb s3://cbox-bucket
+
+BUCKET="cbox-bucket"
+LOCAL_FOLDER="/Komponenty"
+
+echo "Sprawdzam, czy bucket $BUCKET istnieje..."
+if awslocal s3 ls s3://$BUCKET >/dev/null 2>&1; then
+    echo "Bucket $BUCKET już istnieje!"
+else
+    echo "Bucket $BUCKET nie istnieje, tworzę..."
+    awslocal s3 mb s3://$BUCKET
+fi
+
+echo "Synchronizuję lokalny folder $LOCAL_FOLDER z bucketem $BUCKET..."
+awslocal s3 sync $LOCAL_FOLDER s3://$BUCKET/ --delete
+
+echo "Sync zakończony!"
