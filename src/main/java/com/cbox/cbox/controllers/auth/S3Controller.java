@@ -1,15 +1,15 @@
 package com.cbox.cbox.controllers.auth;
 
 import com.cbox.cbox.services.S3Service;
+import com.cbox.cbox.services.S3Service.FileNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/files")
+@RequestMapping("/api/v1/files")
 public class S3Controller {
   private final S3Service s3Service;
 
@@ -19,12 +19,7 @@ public class S3Controller {
   }
 
   @GetMapping
-  public List<String> getFolders() {
-    return s3Service.listAllObjects();
+  public FileNode getFiles(@RequestParam(required = false, defaultValue = "") String prefix) {
+    return s3Service.listObjectsInTree(prefix);
   }
-
-//  @GetMapping
-//  public List<String> listAllFiles() {
-//    return s3Service.listAllObjects();
-//  }
 }
