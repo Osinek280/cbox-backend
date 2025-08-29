@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -40,10 +41,10 @@ public class S3Service {
 
   public static class FileNode {
     public String name;
-    public String type; // "folder" lub "file"
-    public String path; // pełna ścieżka (tylko dla plików)
-    public String previewUrl; // URL do .webp (tylko dla plików)
-    public String downloadUrl; // URL do .skp (tylko dla plików)
+    public String type;
+    public String path;
+    public String previewUrl;
+    public String downloadUrl;
     public List<FileNode> children;
 
     public FileNode() {
@@ -107,22 +108,23 @@ public class S3Service {
     }
 
     String part = parts[0];
-//    FileNode child = getOrCreateChild(node.children, part);
 
     if (parts.length == 1 && (part.endsWith(".skp") || part.endsWith(".webp"))) {
-      String fileName = part.substring(0, part.lastIndexOf(".")); // bez rozszerzenia
+      String fileName = part.substring(0, part.lastIndexOf("."));
       String parentPath = fullKey.substring(0, fullKey.lastIndexOf("/") + 1);
 
-      FileNode fileNode = fileNodes.computeIfAbsent(parentPath + fileName, k -> {
+      String mapKey = parentPath + fileName;
+
+      FileNode fileNode = fileNodes.computeIfAbsent(mapKey, k -> {
         FileNode n = new FileNode();
         n.name = fileName;
         n.type = "file";
-        n.path = parentPath + fileName + ".skp"; // domyślnie
+        n.path = parentPath + fileName + ".skp";
         return n;
       });
 
       if (part.endsWith(".skp")) fileNode.downloadUrl = fullKey;
-      else if (part.endsWith(".webp")) fileNode.previewUrl = fullKey;
+      if (part.endsWith(".webp")) fileNode.previewUrl = fullKey;
 
       addChildIfNotExists(node, fileNode);
     } else {
@@ -151,6 +153,10 @@ public class S3Service {
     }
   }
 
+  private String rewriteHost(URL url) throws MalformedURLException {
+    return new URL("http", "localhost", url.getPort(), url.getFile()).toString();
+  }
+
   private String generatePresignedUrl(String key) {
     java.util.Date expiration = new java.util.Date();
     long expTimeMillis = expiration.getTime() + 1000 * 60 * 60; // 1 godzina
@@ -158,8 +164,13 @@ public class S3Service {
 
     GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, key)
         .withExpiration(expiration);
+
     URL url = s3Client.generatePresignedUrl(request);
-    return url.toString();
+    try {
+      return rewriteHost(url);
+    } catch (MalformedURLException e) {
+      return url.toString();
+    }
   }
 
   public String uploadFile(MultipartFile file) throws IOException {
